@@ -1,0 +1,28 @@
+// Shader
+$aiStandardSurfaceNode = `shadingNode -asShader -isColorManaged aiStandardSurface`;
+$shadingGroupNode = `sets -renderable true -noSurfaceShader true -empty`;
+connectAttr ($aiStandardSurfaceNode + ".outColor") ($shadingGroupNode + ".surfaceShader");
+
+// Albedo
+$albedoFileNode = `shadingNode -asTexture -isColorManaged file`;
+connectAttr ($albedoFileNode + ".outColor") ($aiStandardSurfaceNode + ".baseColor");
+
+// Roughness
+$roughnessFileNode = `shadingNode -asTexture -isColorManaged file`;
+$roughnessColorToFloatNode = `shadingNode -asUtility aiColorToFloat`;
+$roughnessRemapValueNode = `shadingNode -asUtility remapValue`;
+connectAttr ($roughnessFileNode + ".outColor") ($roughnessColorToFloatNode + ".input");
+connectAttr ($roughnessRemapValueNode + ".outValue") ($aiStandardSurfaceNode + ".specularRoughness");
+connectAttr ($roughnessColorToFloatNode + ".outValue") ($roughnessRemapValueNode + ".inputValue");
+
+// Normal
+$aiImageNode = `shadingNode -asTexture -isColorManaged aiImage`;
+$aiNormalNode = `shadingNode -asShader aiNormalMap`;
+connectAttr ($aiImageNode + ".outColor") ($aiNormalNode + ".normal");
+connectAttr ($aiNormalNode + ".outValue") ($aiStandardSurfaceNode + ".normalCamera");
+
+// UV
+$placeTextureNode = `shadingNode -asUtility place2dTexture`;
+connectAttr ($placeTextureNode + ".outUV") ($albedoFileNode + ".uv");
+connectAttr ($placeTextureNode + ".outUV") ($roughnessFileNode + ".uv");
+connectAttr ($placeTextureNode + ".outUV") ($aiImageNode + ".uvcoords");
