@@ -5,4 +5,3 @@ Creates nodes for Base Color/Albedo, Roughness, and Normal, and connects them to
 
 # Usage
 Basic: Copy this into your MEL editor, select a node graph window, and execute it.
-Advanced: Not sure actually. Will get back to you on that.
